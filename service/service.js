@@ -25,7 +25,7 @@ exports.getWordDefinition = function(word,callback){
             if(response.statusCode != 200){
                 throw new Error("API did not Response");
             } else {
-                callback(body);
+                callback(JSON.parse(body));
             }
         }
     });
@@ -40,8 +40,7 @@ exports.getWordExamples = function(word,callback){
             if(response.statusCode != 200){
                 throw new Error("API did not Response");
             } else {
-                let data = JSON.parse(body)
-                callback(data);
+                callback(JSON.parse(body));
             }
         }
     });
@@ -56,14 +55,14 @@ exports.getRelatedWords = function(word,callback){
             if(response.statusCode != 200){
                 throw new Error("API did not Response");
             } else {
-                callback(body);
+                callback(JSON.parse(body));
             }
         }
     });
 }
 
 exports.getRandomWord = function(callback){
-    let randomWordApi = util.format(randomWordAPI,word,API_KEY);
+    let randomWordApi = util.format(randomWordAPI,API_KEY);
     request_def.get(randomWordApi, function (error, response, body) {
         if(error){
             throw new Error(error.toString());
@@ -72,7 +71,7 @@ exports.getRandomWord = function(callback){
                 throw new Error("API did not Response");
             } else {
                 let data = JSON.parse(body);    
-                callback(data);
+                callback(JSON.parse(body));
             }
         }
     });

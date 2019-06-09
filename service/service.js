@@ -17,7 +17,6 @@ var request_def = request.defaults({
 
 exports.getWordDefinition = function(word,callback){
     let wordDefinitionApi = util.format(wordDefinitionAPI,word,API_KEY);
-    console.log(wordDefinitionApi)
     request_def.get(wordDefinitionApi, function (error, response, body) {
         if(error){
             throw new Error(error.toString());

@@ -57,7 +57,7 @@ var wordExample = exports.wordExample = function(word,callback){
         var exampleList = [];
         service.getWordExamples(word,function(data){
             data['examples'].forEach(function(example){
-                exampleList.push(example);
+                exampleList.push(example['text']);
             });
             callback(exampleList);
         })
@@ -97,6 +97,7 @@ var wordFullDictionary = exports.wordFullDictionary = function(word,callback){
     })
 }
 var wordDetails = {};
+var hintSize =0;
 var play = exports.play = function(callback){
     try{
         service.getRandomWord(function(randomWordDict){
@@ -126,6 +127,7 @@ var play = exports.play = function(callback){
                 values[1].forEach(function(synonym){
                     wordDetails['hints'].push(synonym);
                 })
+                hintSize = wordDetails['hints'].length;
                 wordDetails['antonyms'] = values[2];
                 callback(wordDetails);
             })
@@ -136,25 +138,31 @@ var play = exports.play = function(callback){
     }
 }
 
-exports.validAnswer = function(word,callback){
+exports.isValidAnswer = function(word,callback){
     word = word.toLowerCase();
     if(wordDetails['displayedWords'].has(word.toLowerCase())){
-        callback("Sorry You Can't choose already displayed hint as Answer.");
+        console.log("Sorry You Can't choose already displayed hint as Answer.");
+        callback(false);
     }
     if(wordDetails['word'].toLowerCase() == word.toLowerCase()){
-        callback('Correct Word');
+        callback(true);
     } else {
         for(let index = 0;index < wordDetails['synonyms'].length;index++){
-            if(synonym.toLowerCase() == word.toLowerCase()){
-                callback('Correct Word');
+            if(wordDetails['synonyms'][index].toLowerCase() == word.toLowerCase()){
+                callback(true);
                 break;
             }
         }
-        callback('Incorrect Word');
+        callback(false);
     }
 }
-exports.getHint = function(){
-
+exports.getHint = function(callback){
+    let randomHintIndex =  Math.floor(Math.random() * (hintSize - 0));
+    hintSize -= 1;
+    let hintWord = wordDetails['hints'][randomHintIndex];
+    wordDetails['displayedWords'].add(hintWord);
+    [wordDetails['hints'][randomHintIndex],wordDetails['hints'][hintSize]] = [wordDetails['hints'][hintSize],wordDetails['hints'][randomHintIndex]];
+    callback(hintWord)
 }
 
 var allPermutation = function(permutationOptions){
@@ -174,7 +182,3 @@ var allPermutation = function(permutationOptions){
     }
     return permutations;
 }
-
-wordFullDictionary('natural',function(x){
-    console.log(x);
-});
